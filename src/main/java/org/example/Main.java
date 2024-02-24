@@ -62,7 +62,6 @@ public class Main {
 
             int exitCode = process.waitFor();
 
-            // Optional: Process exit code handling
             if (exitCode != 0) {
                 System.err.println("Command exited with code: " + exitCode);
             }
@@ -76,8 +75,6 @@ public class Main {
     }
     @GetMapping("/getURL")
     public ArrayList<String> getURL() {
-        // Replace this with your logic to obtain the URL
-        String url = "https://example.com";
         return dynamicURL;
     }
 
@@ -107,7 +104,6 @@ public class Main {
         }
         return callerIpTimestampPairs;
     }
-    //http://localhost:8080/getInteractions?serverUrl=Cncm5tA9b958boiLpkMGg4o99Y7YOJN8A&startTime=2024-02-24 03:31:36
     private boolean isValidTimestamp(List<Pair<String, String>> pairs, String startTime, String endTime) {
         // If start or end time is not provided, return true
         if (startTime == null && endTime == null) {
@@ -148,10 +144,8 @@ public class Main {
     }
 
     public static void extractAndPrintOastUrls(String line) {
-        // Regular expression to match strings with "oast" and a preceding "http(s)://"
         String regex = "[^\\s]+oast[^\\s]+";
 
-        // Compile the regex for efficiency
         Pattern pattern = Pattern.compile(regex);
 
         // Matcher to find occurrences in the line
