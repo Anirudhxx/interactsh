@@ -13,7 +13,7 @@ RUN curl -LO https://github.com/projectdiscovery/interactsh/releases/download/v1
 # Add your Java project files to the image
 WORKDIR /usr/src/app
 COPY . .
-
+EXPOSE 8080
 # Define the default command to run your Java application
 CMD ["java", "-jar", "target/demo-1.0-SNAPSHOT.jar"]
 
