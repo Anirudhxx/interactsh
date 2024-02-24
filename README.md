@@ -64,10 +64,6 @@ GET /getInteractions?serverUrl=https://example.com&startTime=2024-02-24%2003:31:
 
 Contributions are welcome! Please feel free to submit pull requests for any improvements or additional features.
 
-**License**
-
-This project is licensed under the MIT License. See the LICENSE file for details.
-
 **Contact**
 
 For any inquiries or feedback, please contact anirudhchauhan74000@gmail.com.
