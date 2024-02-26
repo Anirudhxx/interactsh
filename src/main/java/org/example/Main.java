@@ -1,6 +1,9 @@
 package org.example;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.*;
@@ -20,11 +23,10 @@ public class Main {
     private static Map<String, List<Pair<String, String>>> interactionsMap = new HashMap<>();
     public static ArrayList<String> dynamicURL = new ArrayList<>();
     public static void main(String[] args)throws IOException {
-        // Replace with your actual command or input stream source
         SpringApplication.run(Main.class, args);
         Process process = Runtime.getRuntime().exec(" interactsh-client -n 3");
 
-        // Create threads for standard output and error stream processing
+        // threads for standard output and error stream processing
         Thread stdoutThread = new Thread(() -> {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 String line;
@@ -43,7 +45,7 @@ public class Main {
                 while ((line = reader.readLine()) != null) {
                     System.err.println("it's printing "+line); // Print stderr directly
 
-                    // Extract and print URLs with "oast"
+                    // Finding the URL from error stream with "oast"
                     extractAndPrintOastUrls(line);
 
                 }
@@ -52,7 +54,7 @@ public class Main {
             }
         });
 
-        // Start both threads and wait for them to finish
+        // Starting both threads and wait for them to finish
         stdoutThread.start();
         stderrThread.start();
 
@@ -74,19 +76,27 @@ public class Main {
         return "Server is running!";
     }
     @GetMapping("/getURL")
-    public ArrayList<String> getURL() {
-        return dynamicURL;
+    public ResponseEntity<String> getURL() {
+        JSONArray jsonArray = new JSONArray();
+        for (String url : dynamicURL) {
+            JSONObject json = new JSONObject();
+            json.put("url", url);
+            jsonArray.put(json);
+        }
+
+        String jsonString = jsonArray.toString();
+        return ResponseEntity.ok(jsonString);
     }
 
     @GetMapping("/getInteractions")
-    public List<String> getInteractions(
+    public ResponseEntity<String> getInteractions(
             @RequestParam String serverUrl,
             @RequestParam(required = false) String startTime,
             @RequestParam(required = false) String endTime
     ) {
         List<String> callerIpTimestampPairs = new ArrayList<>();
 
-        // Traverse the interactionsMap
+        // Traversing the interactionsMap
         for (Map.Entry<String, List<Pair<String, String>>> entry : interactionsMap.entrySet()) {
             String requestId = entry.getKey();
             List<Pair<String, String>> pairs = entry.getValue();
@@ -102,8 +112,21 @@ public class Main {
                 }
             }
         }
-        return callerIpTimestampPairs;
+
+        JSONArray jsonArray = convertListToJSONArray(callerIpTimestampPairs);
+
+        String jsonString = jsonArray.toString();
+        return ResponseEntity.ok(jsonString);
     }
+
+    private JSONArray convertListToJSONArray(List<String> list) {
+        JSONArray jsonArray = new JSONArray();
+        for (String entry : list) {
+            jsonArray.put(entry);
+        }
+        return jsonArray;
+    }
+
     private boolean isValidTimestamp(List<Pair<String, String>> pairs, String startTime, String endTime) {
         // If start or end time is not provided, return true
         if (startTime == null && endTime == null) {
